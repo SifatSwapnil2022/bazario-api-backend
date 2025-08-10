@@ -11,22 +11,21 @@ const app = express();
 const server = http.createServer(app);
 const mode = process.env.mode || 'dev';
 
-// Define allowed origins
+// Allowed origins from .env
 const allowedOrigins = mode === 'pro'
   ? [
       'http://localhost:3000',
-      process.env.user_panel_production_url,  // Example: https://my-shop-lb5oplfpn-sifats-projects-26d2e85a.vercel.app
-      process.env.admin_panel_production_url // Example: https://bazario-admin.vercel.app
+      process.env.CLIENT_CUSTOMER_PRODUCTION_URL // Vercel shop frontend
     ]
   : [
       'http://localhost:3000',
       'http://localhost:3001'
     ];
 
-// CORS for Express routes
+// ===== Express CORS =====
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow non-browser clients
+    if (!origin) return callback(null, true); // allow requests without Origin
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -35,7 +34,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Socket.IO with same CORS settings
+// ===== Socket.IO with same CORS =====
 const io = socket(server, {
   cors: {
     origin: allowedOrigins,
